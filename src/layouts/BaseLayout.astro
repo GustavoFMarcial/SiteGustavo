@@ -1,0 +1,64 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import {
+  type Locale,
+  useTranslations,
+  localizedPath,
+} from '../i18n/ui';
+
+interface Props {
+  title?: string;
+  description?: string;
+  locale?: Locale;
+}
+
+const {
+  locale = 'pt',
+  title,
+  description,
+} = Astro.props;
+
+const t = useTranslations(locale);
+const pageTitle = title ? `${title} · ${t.siteTitle}` : t.siteTitle;
+const pageDescription = description ?? t.siteDescription;
+const canonicalPath = Astro.url.pathname;
+const alternateEn = localizedPath(
+  canonicalPath.replace(/^\/en(?=\/|$)/, '') || '/',
+  'en',
+);
+const alternatePt = localizedPath(
+  canonicalPath.replace(/^\/en(?=\/|$)/, '') || '/',
+  'pt',
+);
+---
+
+<!doctype html>
+<html lang={locale === 'pt' ? 'pt-BR' : 'en'}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={pageDescription} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="canonical" href={new URL(canonicalPath, Astro.site)} />
+    <link rel="alternate" hreflang="pt-BR" href={new URL(alternatePt, Astro.site)} />
+    <link rel="alternate" hreflang="en" href={new URL(alternateEn, Astro.site)} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <title>{pageTitle}</title>
+  </head>
+  <body class="min-h-screen flex flex-col antialiased">
+    <Header locale={locale} currentPath={canonicalPath} />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
+</html>

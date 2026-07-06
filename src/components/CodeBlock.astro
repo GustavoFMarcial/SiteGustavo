@@ -1,0 +1,17 @@
+---
+interface Props {
+  title: string;
+  caption: string;
+  code: string;
+}
+
+const { title, caption, code } = Astro.props;
+---
+
+<div class="overflow-hidden rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)]">
+  <div class="border-b border-[var(--color-border)] px-4 py-3">
+    <h3 class="font-mono text-sm font-medium text-white">{title}</h3>
+    <p class="mt-1 text-sm text-[var(--color-text-muted)]">{caption}</p>
+  </div>
+  <pre class="overflow-x-auto p-4 text-xs leading-relaxed"><code class="font-mono text-slate-300">{code}</code></pre>
+</div>
