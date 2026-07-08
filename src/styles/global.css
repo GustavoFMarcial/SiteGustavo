@@ -14,6 +14,7 @@
 
 html {
   scroll-behavior: smooth;
+  font-size: 18px;
 }
 
 body {
@@ -24,4 +25,22 @@ body {
 
 ::selection {
   background-color: color-mix(in srgb, var(--color-accent) 40%, transparent);
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.85);
+}
+
+dialog[open] {
+  border: none;
+  padding: 0;
+  background: transparent;
+  max-width: 95vw;
+  max-height: 95vh;
+}
+
+dialog[open] img {
+  max-width: 95vw;
+  max-height: 90vh;
+  object-fit: contain;
 }

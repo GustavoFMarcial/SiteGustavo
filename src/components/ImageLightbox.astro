@@ -1,0 +1,59 @@
+---
+interface Props {
+  src: string;
+  alt: string;
+  id: string;
+  enlargeLabel: string;
+  class?: string;
+  imgClass?: string;
+}
+
+const {
+  src,
+  alt,
+  id,
+  enlargeLabel,
+  class: className = '',
+  imgClass = 'h-full w-full object-contain',
+} = Astro.props;
+const dialogId = `lightbox-${id}`;
+---
+
+<button
+  type="button"
+  class:list={[
+    'block w-full cursor-zoom-in bg-[var(--color-surface)]',
+    className,
+  ]}
+  data-lightbox-trigger={id}
+  aria-label={`${enlargeLabel}: ${alt}`}
+>
+  <img src={src} alt={alt} class:list={['mx-auto', imgClass]} loading="lazy" />
+</button>
+
+<dialog id={dialogId} class="fixed inset-0 m-auto">
+  <form method="dialog">
+    <button
+      type="submit"
+      class="fixed inset-0 cursor-default"
+      aria-label="Close"
+    />
+  </form>
+  <img src={src} alt={alt} class="relative z-10 rounded-lg" />
+  <form method="dialog" class="fixed right-4 top-4 z-20">
+    <button
+      type="submit"
+      class="rounded-full bg-black/60 px-3 py-1 text-base text-white hover:bg-black/80"
+    >
+      ✕
+    </button>
+  </form>
+</dialog>
+
+<script define:vars={{ id }}>
+  const btn = document.querySelector(`[data-lightbox-trigger="${id}"]`);
+  const dialog = document.getElementById(`lightbox-${id}`);
+  btn?.addEventListener('click', () => {
+    dialog?.showModal();
+  });
+</script>

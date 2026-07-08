@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Button from '../Button.astro';
 import CodeBlock from '../CodeBlock.astro';
+import ImageLightbox from '../ImageLightbox.astro';
 import { type Locale, useTranslations, localizedPath } from '../../i18n/ui';
 import { getProject, type ProjectSlug } from '../../data/projects';
 
@@ -16,7 +17,6 @@ const project = getProject(slug, locale);
 const sectionLabels =
   locale === 'pt'
     ? {
-        objective: 'Objetivo',
         stack: 'Stack',
         patterns: 'Arquitetura',
         highlights: 'Funcionalidades',
@@ -29,7 +29,6 @@ const sectionLabels =
         back: '← Voltar aos projetos',
       }
     : {
-        objective: 'Objective',
         stack: 'Stack',
         patterns: 'Architecture',
         highlights: 'Features',
@@ -47,7 +46,7 @@ const sectionLabels =
   <article class="mx-auto max-w-5xl px-4 py-16 sm:px-6">
     <a
       href={localizedPath('/projetos', locale)}
-      class="text-sm text-[var(--color-text-muted)] hover:text-[var(--color-accent)]"
+      class="text-base text-[var(--color-text-muted)] hover:text-[var(--color-accent)]"
     >
       {sectionLabels.back}
     </a>
@@ -56,19 +55,36 @@ const sectionLabels =
       <div class="flex flex-wrap items-center gap-3">
         <h1 class="text-3xl font-bold text-white sm:text-4xl">{project.title}</h1>
         {
-          project.github ? (
-            <span class="rounded-full bg-emerald-950 px-3 py-0.5 text-xs font-medium text-emerald-400">
+          project.status === 'in-development' && (
+            <span class="rounded-full bg-blue-950 px-3 py-0.5 text-sm font-medium text-blue-400">
+              {t.projects.inDevelopment}
+            </span>
+          )
+        }
+        {
+          project.status === 'completed' && (
+            <span class="rounded-full bg-emerald-950 px-3 py-0.5 text-sm font-medium text-emerald-400">
+              {t.projects.completed}
+            </span>
+          )
+        }
+        {
+          project.github && (
+            <span class="rounded-full bg-emerald-950/60 px-3 py-0.5 text-sm font-medium text-emerald-400">
               {t.projects.openSource}
             </span>
-          ) : (
-            <span class="rounded-full bg-amber-950 px-3 py-0.5 text-xs font-medium text-amber-400">
+          )
+        }
+        {
+          project.isPrivate && (
+            <span class="rounded-full bg-amber-950/60 px-3 py-0.5 text-sm font-medium text-amber-400">
               {t.projects.privateCode}
             </span>
           )
         }
       </div>
-      <p class="mt-2 text-lg text-[var(--color-accent)]">{project.tagline}</p>
-      <p class="mt-4 max-w-3xl leading-relaxed text-[var(--color-text-muted)]">
+      <p class="mt-2 text-xl text-[var(--color-accent)]">{project.tagline}</p>
+      <p class="mt-4 max-w-3xl text-base leading-relaxed text-[var(--color-text-muted)]">
         {project.description}
       </p>
 
@@ -91,7 +107,7 @@ const sectionLabels =
       <div class="mt-4 flex flex-wrap gap-2">
         {
           project.stack.map((tech) => (
-            <span class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3 py-1.5 text-sm text-[var(--color-text-muted)]">
+            <span class="rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-elevated)] px-3 py-1.5 text-base text-[var(--color-text-muted)]">
               {tech}
             </span>
           ))
@@ -104,7 +120,7 @@ const sectionLabels =
       <ul class="mt-4 grid gap-2 sm:grid-cols-2">
         {
           project.patterns.map((pattern) => (
-            <li class="flex items-center gap-2 text-sm text-[var(--color-text-muted)]">
+            <li class="flex items-center gap-2 text-base text-[var(--color-text-muted)]">
               <span class="text-[var(--color-accent)]">✔</span>
               {pattern}
             </li>
@@ -113,12 +129,30 @@ const sectionLabels =
       </ul>
     </section>
 
+    {
+      project.methodology && project.methodology.length > 0 && (
+        <section class="mt-10">
+          <h2 class="text-xl font-semibold text-white">{t.projects.methodology}</h2>
+          <ul class="mt-4 space-y-2">
+            {
+              project.methodology.map((item) => (
+                <li class="flex items-start gap-2 text-base text-[var(--color-text-muted)]">
+                  <span class="mt-0.5 w-5 shrink-0 text-[var(--color-accent)]">→</span>
+                  {item}
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+      )
+    }
+
     <section class="mt-10">
       <h2 class="text-xl font-semibold text-white">{sectionLabels.highlights}</h2>
       <ul class="mt-4 space-y-2">
         {
           project.highlights.map((item) => (
-            <li class="text-sm text-[var(--color-text-muted)]">• {item}</li>
+            <li class="text-base text-[var(--color-text-muted)]">• {item}</li>
           ))
         }
       </ul>
@@ -129,8 +163,8 @@ const sectionLabels =
       <ul class="mt-4 space-y-2">
         {
           project.showsAboutMe.map((item) => (
-            <li class="flex items-start gap-2 text-sm text-[var(--color-text-muted)]">
-              <span class="mt-0.5 text-[var(--color-accent)]">→</span>
+            <li class="flex items-start gap-2 text-base text-[var(--color-text-muted)]">
+              <span class="mt-0.5 w-5 shrink-0 text-[var(--color-accent)]">→</span>
               {item}
             </li>
           ))
@@ -142,20 +176,26 @@ const sectionLabels =
       project.roadmap && (
         <section class="mt-10">
           <h2 class="text-xl font-semibold text-white">{sectionLabels.roadmap}</h2>
-          <div class="mt-4 grid gap-6 sm:grid-cols-2">
-            <div>
-              <h3 class="text-sm font-medium text-emerald-400">{sectionLabels.done}</h3>
-              <ul class="mt-2 space-y-1">
+          <div class="mt-4 grid items-start gap-6 sm:grid-cols-2">
+            <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-5">
+              <h3 class="text-base font-medium text-emerald-400">{sectionLabels.done}</h3>
+              <ul class="mt-3 space-y-2">
                 {project.roadmap.done.map((item) => (
-                  <li class="text-sm text-[var(--color-text-muted)]">✓ {item}</li>
+                  <li class="flex items-start gap-2 text-base text-[var(--color-text-muted)]">
+                    <span class="w-5 shrink-0 text-emerald-400">✓</span>
+                    {item}
+                  </li>
                 ))}
               </ul>
             </div>
-            <div>
-              <h3 class="text-sm font-medium text-amber-400">{sectionLabels.planned}</h3>
-              <ul class="mt-2 space-y-1">
+            <div class="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-elevated)] p-5">
+              <h3 class="text-base font-medium text-amber-400">{sectionLabels.planned}</h3>
+              <ul class="mt-3 space-y-2">
                 {project.roadmap.planned.map((item) => (
-                  <li class="text-sm text-[var(--color-text-muted)]">□ {item}</li>
+                  <li class="flex items-start gap-2 text-base text-[var(--color-text-muted)]">
+                    <span class="w-5 shrink-0 text-amber-400">□</span>
+                    {item}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -166,17 +206,20 @@ const sectionLabels =
 
     <section class="mt-12">
       <h2 class="text-xl font-semibold text-white">{sectionLabels.gallery}</h2>
+      <p class="mt-2 text-sm text-[var(--color-text-muted)]">{t.projects.clickToEnlarge}</p>
       <div class="mt-6 grid gap-6 sm:grid-cols-2">
         {
-          project.images.map((image) => (
+          project.images.map((image, index) => (
             <figure class="overflow-hidden rounded-xl border border-[var(--color-border)]">
-              <img
+              <ImageLightbox
                 src={image.src}
                 alt={image.alt}
-                class="w-full object-cover"
-                loading="lazy"
+                id={`${project.slug}-${index}`}
+                enlargeLabel={t.projects.clickToEnlarge}
+                class="p-2"
+                imgClass="max-h-80 w-full object-contain"
               />
-              <figcaption class="px-4 py-2 text-xs text-[var(--color-text-muted)]">
+              <figcaption class="px-4 py-2 text-sm text-[var(--color-text-muted)]">
                 {image.alt}
               </figcaption>
             </figure>

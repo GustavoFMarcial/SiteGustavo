@@ -6,7 +6,7 @@ export const ui = {
   pt: {
     siteTitle: 'Gustavo Felipe Marcial',
     siteDescription:
-      'Desenvolvedor Backend .NET — APIs escaláveis, arquitetura limpa e sistemas distribuídos.',
+      'Desenvolvedor Backend .NET — portfólio e engineering notebook.',
     nav: {
       home: 'Início',
       projects: 'Projetos',
@@ -16,15 +16,13 @@ export const ui = {
     hero: {
       name: 'Gustavo Felipe Marcial',
       headline: 'Desenvolvedor Backend .NET',
-      subheadline:
-        'APIs escaláveis, arquitetura limpa e sistemas distribuídos.',
       viewProjects: 'Ver Projetos',
       resume: 'Currículo PDF',
     },
     intro: {
       title: 'Sobre mim',
       p1: 'Sou desenvolvedor focado em backend utilizando .NET, PostgreSQL, Redis e Docker. Construo sistemas com separação clara de responsabilidades e decisões técnicas conscientes.',
-      p2: 'Atualmente desenvolvo projetos pessoais aplicando conceitos de produção: Clean Architecture, DDD, mensageria com Redis Streams e arquitetura orientada a eventos.',
+      p2: 'Atualmente desenvolvo projetos pessoais aplicando conceitos de produção: Clean Architecture, DDD, mensageria com Redis Streams e eventos de domínio.',
       p3: 'Este site funciona como um engineering notebook — documento como penso, aprendo e resolvo problemas, não apenas o que usei na stack.',
     },
     featured: {
@@ -35,7 +33,7 @@ export const ui = {
       title: 'Stack',
       subtitle: 'Honesta — sem porcentagens inventadas.',
       principal: 'Principal',
-      solid: 'Conhecimento sólido',
+      solid: 'Já usei em projetos',
       learning: 'Estudando',
       viewAll: 'Ver stack completa',
     },
@@ -47,6 +45,10 @@ export const ui = {
       sourceCode: 'Ver no GitHub',
       privateCode: 'Código privado — disponível para revisão em entrevista',
       openSource: 'Código aberto',
+      inDevelopment: 'Em desenvolvimento',
+      completed: 'Concluído',
+      clickToEnlarge: 'Clique para ampliar',
+      methodology: 'Como estou desenvolvendo',
     },
     contact: {
       title: 'Contato',
@@ -61,7 +63,7 @@ export const ui = {
   en: {
     siteTitle: 'Gustavo Felipe Marcial',
     siteDescription:
-      '.NET Backend Developer — scalable APIs, clean architecture, and distributed systems.',
+      '.NET Backend Developer — portfolio and engineering notebook.',
     nav: {
       home: 'Home',
       projects: 'Projects',
@@ -71,15 +73,13 @@ export const ui = {
     hero: {
       name: 'Gustavo Felipe Marcial',
       headline: '.NET Backend Developer',
-      subheadline:
-        'Scalable APIs, clean architecture, and distributed systems.',
       viewProjects: 'View Projects',
       resume: 'Resume PDF',
     },
     intro: {
       title: 'About me',
       p1: 'I focus on backend development with .NET, PostgreSQL, Redis, and Docker. I build systems with clear separation of concerns and deliberate technical decisions.',
-      p2: 'I work on personal projects applying production concepts: Clean Architecture, DDD, Redis Streams messaging, and event-driven architecture.',
+      p2: 'I work on personal projects applying production concepts: Clean Architecture, DDD, Redis Streams messaging, and domain events.',
       p3: 'This site is an engineering notebook — it documents how I think, learn, and solve problems, not just a technology list.',
     },
     featured: {
@@ -90,7 +90,7 @@ export const ui = {
       title: 'Stack',
       subtitle: 'Honest — no made-up percentages.',
       principal: 'Core',
-      solid: 'Solid knowledge',
+      solid: 'Used in projects',
       learning: 'Learning',
       viewAll: 'View full stack',
     },
@@ -102,6 +102,10 @@ export const ui = {
       sourceCode: 'View on GitHub',
       privateCode: 'Private code — available for review in interviews',
       openSource: 'Open source',
+      inDevelopment: 'In development',
+      completed: 'Completed',
+      clickToEnlarge: 'Click to enlarge',
+      methodology: "How I'm building it",
     },
     contact: {
       title: 'Contact',

@@ -21,7 +21,7 @@ const variants = {
 <a
   href={href}
   class:list={[
-    'inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-medium transition-colors',
+    'inline-flex items-center justify-center rounded-lg border px-4 py-2 text-base font-medium transition-colors',
     variants[variant],
   ]}
   {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
@@ -30,7 +30,7 @@ const variants = {
   {
     external && (
       <svg
-        class="ml-1.5 h-3.5 w-3.5 opacity-60"
+        class="ml-1.5 h-4 w-4 opacity-60"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"

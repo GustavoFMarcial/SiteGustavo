@@ -2,15 +2,19 @@ import type { Locale } from '../i18n/ui';
 
 export type ProjectSlug = 'anunciecompre' | 'collectapp';
 
+export type ProjectStatus = 'completed' | 'in-development';
+
 export interface ProjectContent {
   slug: ProjectSlug;
   title: string;
   tagline: string;
   description: string;
+  status?: ProjectStatus;
   stack: string[];
   patterns: string[];
   highlights: string[];
   showsAboutMe: string[];
+  methodology?: string[];
   github?: string;
   isPrivate?: boolean;
   images: { src: string; alt: string }[];
@@ -54,10 +58,19 @@ const anunciecompre: Record<Locale, ProjectContent> = {
       'Modelagem de domínio com Aggregates, Value Objects e Domain Events',
       'Integração com APIs externas via webhooks (Twilio)',
       'Mensageria e desacoplamento com Producer/Consumer',
-      'Gerenciamento de estado distribuído no Redis',
+      'Gerenciamento de estado de conversa no Redis',
       'Idempotência no processamento de eventos',
     ],
-    isPrivate: true,
+    status: 'in-development',
+    github: 'https://github.com/GustavoFMarcial/AnuncieCompre',
+    methodology: [
+      'Full cycle — do requisito ao deploy',
+      'SDLC',
+      'Agile / Scrum',
+      'Git workflow (branches, PRs)',
+      'Desenvolvimento iterativo com entregas incrementais',
+    ],
+    isPrivate: false,
     images: [
       {
         src: '/projects/anunciecompre/cadastro-whatsapp.png',
@@ -69,98 +82,96 @@ const anunciecompre: Record<Locale, ProjectContent> = {
       },
     ],
     roadmap: {
-      done: ['Redis Streams', 'Event-Driven', 'DDD', 'State Machine'],
+      done: ['Redis Streams', 'Event-Driven', 'DDD', 'State Machine', 'CI'],
       planned: [
-        'Outbox Pattern',
-        'RabbitMQ',
-        'CQRS completo',
-        'Kubernetes',
-        'CI/CD',
-        'OpenTelemetry',
+        'CD',
+        'Testes unitários',
+        'Testes de integração',
+        'Fluxos restantes de interação (cliente e fornecedor)',
       ],
     },
-    codeSections: [
-      {
-        title: 'State Machine — HandleMessage',
-        caption:
-          'Cada mensagem passa pelo nó atual do fluxo. Se válida, avança o estado e pode disparar Domain Events.',
-        code: `public (ReadOnlyCollection<string> response, string nextStepId) HandleMessage(
-    IConversationNode awaitingResponseNode,
-    string message,
-    User user,
-    bool isSessionJustCreated)
-{
-    if (isSessionJustCreated)
-        return ([awaitingResponseNode.Message], awaitingResponseNode.Id);
+//     codeSections: [
+//       {
+//         title: 'State Machine — HandleMessage',
+//         caption:
+//           'Cada mensagem passa pelo nó atual do fluxo. Se válida, avança o estado e pode disparar Domain Events.',
+//         code: `public (ReadOnlyCollection<string> response, string nextStepId) HandleMessage(
+//     IConversationNode awaitingResponseNode,
+//     string message,
+//     User user,
+//     bool isSessionJustCreated)
+// {
+//     if (isSessionJustCreated)
+//         return ([awaitingResponseNode.Message], awaitingResponseNode.Id);
 
-    if (awaitingResponseNode is FinalNode)
-        return ([awaitingResponseNode.Transitions["next"].Message],
-                awaitingResponseNode.Transitions["next"].Id);
+//     if (awaitingResponseNode is FinalNode)
+//         return ([awaitingResponseNode.Transitions["next"].Message],
+//                 awaitingResponseNode.Transitions["next"].Id);
 
-    NodeResult result = awaitingResponseNode.NodeValidator
-        .Validate(awaitingResponseNode, message);
+//     NodeResult result = awaitingResponseNode.NodeValidator
+//         .Validate(awaitingResponseNode, message);
 
-    if (result.IsSuccess && result.ProcDomainEvent)
-    {
-        foreach (var factory in awaitingResponseNode.DomainEventFactory)
-            AddDomainEvent(factory.Handle(user, result.Value));
-    }
+//     if (result.IsSuccess && result.ProcDomainEvent)
+//     {
+//         foreach (var factory in awaitingResponseNode.DomainEventFactory)
+//             AddDomainEvent(factory.Handle(user, result.Value));
+//     }
 
-    return ([result.Message], result.NextStepId);
-}`,
-      },
-      {
-        title: 'Strategy — ValidationNodeValidator',
-        caption:
-          'Cada tipo de resposta delega validação a um IValueObjectValidator — Strategy Pattern sem switch gigante.',
-        code: `public class ValidationNodeValidator(IValueObjectValidator valueObjectValidator)
-    : INodeValidator
-{
-    public NodeResult Validate(IConversationNode conversationNode, string message)
-    {
-        IResultValueObject result = valueObjectValidator.Validate(message);
+//     return ([result.Message], result.NextStepId);
+// }`,
+//       },
+//       {
+//         title: 'Strategy — ValidationNodeValidator',
+//         caption:
+//           'Cada tipo de resposta delega validação a um IValueObjectValidator — Strategy Pattern sem switch gigante.',
+//         code: `public class ValidationNodeValidator(IValueObjectValidator valueObjectValidator)
+//     : INodeValidator
+// {
+//     public NodeResult Validate(IConversationNode conversationNode, string message)
+//     {
+//         IResultValueObject result = valueObjectValidator.Validate(message);
 
-        if (!result.IsSuccess)
-            return NodeResult.Failure(result.Message, conversationNode.Id);
+//         if (!result.IsSuccess)
+//             return NodeResult.Failure(result.Message, conversationNode.Id);
 
-        return NodeResult.Success(
-            result.Value!,
-            conversationNode.Transitions["next"].Message,
-            conversationNode.Transitions["next"].Id);
-    }
-}`,
-      },
-      {
-        title: 'Consumer — Redis Streams',
-        caption:
-          'Processamento assíncrono desacoplado do webhook Twilio — Consumer Group, idempotência e ACK.',
-        code: `var messages = await db.StreamReadGroupAsync(
-    "events:customer-sent-product", "workers",
-    "customer-sent-product", ">", count: 5);
+//         return NodeResult.Success(
+//             result.Value!,
+//             conversationNode.Transitions["next"].Message,
+//             conversationNode.Transitions["next"].Id);
+//     }
+// }`,
+//       },
+//       {
+//         title: 'Consumer — Redis Streams',
+//         caption:
+//           'Processamento assíncrono desacoplado do webhook Twilio — Consumer Group, idempotência e ACK.',
+//         code: `var messages = await db.StreamReadGroupAsync(
+//     "events:customer-sent-product", "workers",
+//     "customer-sent-product", ">", count: 5);
 
-foreach (var message in messages)
-{
-    var eventId = (string?)message["eventId"];
-    var eventKey = $"processed-events:{eventId}";
+// foreach (var message in messages)
+// {
+//     var eventId = (string?)message["eventId"];
+//     var eventKey = $"processed-events:{eventId}";
 
-    if (await db.KeyExistsAsync(eventKey))
-    {
-        await db.StreamAcknowledgeAsync(
-            "events:customer-sent-product", "workers", message.Id);
-        continue;
-    }
+//     if (await db.KeyExistsAsync(eventKey))
+//     {
+//         await db.StreamAcknowledgeAsync(
+//             "events:customer-sent-product", "workers", message.Id);
+//         continue;
+//     }
 
-    var domainEvent = JsonSerializer
-        .Deserialize<CustomerSentProductDomainEvent>((string?)message["event"]);
+//     var domainEvent = JsonSerializer
+//         .Deserialize<CustomerSentProductDomainEvent>((string?)message["event"]);
 
-    await db.HashSetAsync($"session:{domainEvent.Phone}",
-        new HashEntry("product", domainEvent.Product));
-    await db.StringSetAsync(eventKey, "1", TimeSpan.FromDays(7));
-    await db.StreamAcknowledgeAsync(
-        "events:customer-sent-product", "workers", message.Id);
-}`,
-      },
-    ],
+//     await db.HashSetAsync($"session:{domainEvent.Phone}",
+//         new HashEntry("product", domainEvent.Product));
+//     await db.StringSetAsync(eventKey, "1", TimeSpan.FromDays(7));
+//     await db.StreamAcknowledgeAsync(
+//         "events:customer-sent-product", "workers", message.Id);
+// }`,
+//       },
+//     ],
   },
   en: {
     slug: 'anunciecompre',
@@ -197,10 +208,19 @@ foreach (var message in messages)
       'Domain modeling with Aggregates, Value Objects, and Domain Events',
       'External API integration via webhooks (Twilio)',
       'Messaging and decoupling with Producer/Consumer',
-      'Distributed state management in Redis',
+      'Conversation state management in Redis',
       'Idempotent event processing',
     ],
-    isPrivate: true,
+    status: 'in-development',
+    github: 'https://github.com/GustavoFMarcial/AnuncieCompre',
+    methodology: [
+      'Full cycle — from requirements to deploy',
+      'SDLC',
+      'Agile / Scrum',
+      'Git workflow (branches, PRs)',
+      'Iterative development with incremental deliveries',
+    ],
+    isPrivate: false,
     images: [
       {
         src: '/projects/anunciecompre/cadastro-whatsapp.png',
@@ -212,98 +232,96 @@ foreach (var message in messages)
       },
     ],
     roadmap: {
-      done: ['Redis Streams', 'Event-Driven', 'DDD', 'State Machine'],
+      done: ['Redis Streams', 'Event-Driven', 'DDD', 'State Machine', 'CI'],
       planned: [
-        'Outbox Pattern',
-        'RabbitMQ',
-        'Full CQRS',
-        'Kubernetes',
-        'CI/CD',
-        'OpenTelemetry',
+        'CD',
+        'Unit tests',
+        'Integration tests',
+        'Remaining client and supplier interaction flows',
       ],
     },
-    codeSections: [
-      {
-        title: 'State Machine — HandleMessage',
-        caption:
-          'Each message goes through the current flow node. If valid, it advances state and may raise Domain Events.',
-        code: `public (ReadOnlyCollection<string> response, string nextStepId) HandleMessage(
-    IConversationNode awaitingResponseNode,
-    string message,
-    User user,
-    bool isSessionJustCreated)
-{
-    if (isSessionJustCreated)
-        return ([awaitingResponseNode.Message], awaitingResponseNode.Id);
+//     codeSections: [
+//       {
+//         title: 'State Machine — HandleMessage',
+//         caption:
+//           'Each message goes through the current flow node. If valid, it advances state and may raise Domain Events.',
+//         code: `public (ReadOnlyCollection<string> response, string nextStepId) HandleMessage(
+//     IConversationNode awaitingResponseNode,
+//     string message,
+//     User user,
+//     bool isSessionJustCreated)
+// {
+//     if (isSessionJustCreated)
+//         return ([awaitingResponseNode.Message], awaitingResponseNode.Id);
 
-    if (awaitingResponseNode is FinalNode)
-        return ([awaitingResponseNode.Transitions["next"].Message],
-                awaitingResponseNode.Transitions["next"].Id);
+//     if (awaitingResponseNode is FinalNode)
+//         return ([awaitingResponseNode.Transitions["next"].Message],
+//                 awaitingResponseNode.Transitions["next"].Id);
 
-    NodeResult result = awaitingResponseNode.NodeValidator
-        .Validate(awaitingResponseNode, message);
+//     NodeResult result = awaitingResponseNode.NodeValidator
+//         .Validate(awaitingResponseNode, message);
 
-    if (result.IsSuccess && result.ProcDomainEvent)
-    {
-        foreach (var factory in awaitingResponseNode.DomainEventFactory)
-            AddDomainEvent(factory.Handle(user, result.Value));
-    }
+//     if (result.IsSuccess && result.ProcDomainEvent)
+//     {
+//         foreach (var factory in awaitingResponseNode.DomainEventFactory)
+//             AddDomainEvent(factory.Handle(user, result.Value));
+//     }
 
-    return ([result.Message], result.NextStepId);
-}`,
-      },
-      {
-        title: 'Strategy — ValidationNodeValidator',
-        caption:
-          'Each response type delegates validation to an IValueObjectValidator — Strategy Pattern without a giant switch.',
-        code: `public class ValidationNodeValidator(IValueObjectValidator valueObjectValidator)
-    : INodeValidator
-{
-    public NodeResult Validate(IConversationNode conversationNode, string message)
-    {
-        IResultValueObject result = valueObjectValidator.Validate(message);
+//     return ([result.Message], result.NextStepId);
+// }`,
+//       },
+//       {
+//         title: 'Strategy — ValidationNodeValidator',
+//         caption:
+//           'Each response type delegates validation to an IValueObjectValidator — Strategy Pattern without a giant switch.',
+//         code: `public class ValidationNodeValidator(IValueObjectValidator valueObjectValidator)
+//     : INodeValidator
+// {
+//     public NodeResult Validate(IConversationNode conversationNode, string message)
+//     {
+//         IResultValueObject result = valueObjectValidator.Validate(message);
 
-        if (!result.IsSuccess)
-            return NodeResult.Failure(result.Message, conversationNode.Id);
+//         if (!result.IsSuccess)
+//             return NodeResult.Failure(result.Message, conversationNode.Id);
 
-        return NodeResult.Success(
-            result.Value!,
-            conversationNode.Transitions["next"].Message,
-            conversationNode.Transitions["next"].Id);
-    }
-}`,
-      },
-      {
-        title: 'Consumer — Redis Streams',
-        caption:
-          'Async processing decoupled from the Twilio webhook — Consumer Group, idempotency, and ACK.',
-        code: `var messages = await db.StreamReadGroupAsync(
-    "events:customer-sent-product", "workers",
-    "customer-sent-product", ">", count: 5);
+//         return NodeResult.Success(
+//             result.Value!,
+//             conversationNode.Transitions["next"].Message,
+//             conversationNode.Transitions["next"].Id);
+//     }
+// }`,
+//       },
+//       {
+//         title: 'Consumer — Redis Streams',
+//         caption:
+//           'Async processing decoupled from the Twilio webhook — Consumer Group, idempotency, and ACK.',
+//         code: `var messages = await db.StreamReadGroupAsync(
+//     "events:customer-sent-product", "workers",
+//     "customer-sent-product", ">", count: 5);
 
-foreach (var message in messages)
-{
-    var eventId = (string?)message["eventId"];
-    var eventKey = $"processed-events:{eventId}";
+// foreach (var message in messages)
+// {
+//     var eventId = (string?)message["eventId"];
+//     var eventKey = $"processed-events:{eventId}";
 
-    if (await db.KeyExistsAsync(eventKey))
-    {
-        await db.StreamAcknowledgeAsync(
-            "events:customer-sent-product", "workers", message.Id);
-        continue;
-    }
+//     if (await db.KeyExistsAsync(eventKey))
+//     {
+//         await db.StreamAcknowledgeAsync(
+//             "events:customer-sent-product", "workers", message.Id);
+//         continue;
+//     }
 
-    var domainEvent = JsonSerializer
-        .Deserialize<CustomerSentProductDomainEvent>((string?)message["event"]);
+//     var domainEvent = JsonSerializer
+//         .Deserialize<CustomerSentProductDomainEvent>((string?)message["event"]);
 
-    await db.HashSetAsync($"session:{domainEvent.Phone}",
-        new HashEntry("product", domainEvent.Product));
-    await db.StringSetAsync(eventKey, "1", TimeSpan.FromDays(7));
-    await db.StreamAcknowledgeAsync(
-        "events:customer-sent-product", "workers", message.Id);
-}`,
-      },
-    ],
+//     await db.HashSetAsync($"session:{domainEvent.Phone}",
+//         new HashEntry("product", domainEvent.Product));
+//     await db.StringSetAsync(eventKey, "1", TimeSpan.FromDays(7));
+//     await db.StreamAcknowledgeAsync(
+//         "events:customer-sent-product", "workers", message.Id);
+// }`,
+//       },
+//     ],
   },
 };
 
@@ -335,12 +353,14 @@ const collectapp: Record<Locale, ProjectContent> = {
       'Testes unitários',
     ],
     showsAboutMe: [
+      'Testes unitários para validação de funcionalidades críticas',
       'Autenticação e controle de permissões por roles',
       'Entrega de produto funcional e completo',
       'Regras de negócio com workflow de aprovação',
       'Dashboard com visualização de dados',
       'Base que levou à evolução para DDD e Clean Architecture',
     ],
+    status: 'completed',
     github: 'https://github.com/GustavoFMarcial/CollectApp',
     images: [
       {
@@ -380,12 +400,14 @@ const collectapp: Record<Locale, ProjectContent> = {
       'Unit tests',
     ],
     showsAboutMe: [
+      'Unit tests for critical functionality validation',
       'Authentication and role-based permission control',
       'Delivery of a complete, functional product',
       'Business rules with approval workflow',
       'Dashboard with data visualization',
       'Foundation that led to DDD and Clean Architecture evolution',
     ],
+    status: 'completed',
     github: 'https://github.com/GustavoFMarcial/CollectApp',
     images: [
       {
