@@ -4,7 +4,7 @@ export const defaultLocale: Locale = 'pt';
 
 export const ui = {
   pt: {
-    siteTitle: 'Gustavo Felipe Marcial',
+    siteTitle: 'Gustavo Marcial',
     siteDescription:
       'Desenvolvedor Backend .NET — portfólio e engineering notebook.',
     nav: {
@@ -14,7 +14,7 @@ export const ui = {
       contact: 'Contato',
     },
     hero: {
-      name: 'Gustavo Felipe Marcial',
+      name: 'Gustavo Marcial',
       headline: 'Desenvolvedor Backend .NET',
       viewProjects: 'Ver Projetos',
       resume: 'Currículo PDF',
@@ -61,7 +61,7 @@ export const ui = {
     },
   },
   en: {
-    siteTitle: 'Gustavo Felipe Marcial',
+    siteTitle: 'Gustavo Marcial',
     siteDescription:
       '.NET Backend Developer — portfolio and engineering notebook.',
     nav: {
@@ -71,7 +71,7 @@ export const ui = {
       contact: 'Contact',
     },
     hero: {
-      name: 'Gustavo Felipe Marcial',
+      name: 'Gustavo Marcial',
       headline: '.NET Backend Developer',
       viewProjects: 'View Projects',
       resume: 'Resume PDF',
